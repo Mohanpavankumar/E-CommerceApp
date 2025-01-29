@@ -12,7 +12,6 @@ async function userDetailsController(req, res) {
             success : true,
             message : "User deatails"
         })
-
         console.log("user",user)
         
     } catch (error) {
