@@ -4,11 +4,13 @@ import productCategory from '../helpers/productCategory'
 import { FaCloudUploadAlt } from "react-icons/fa";
 import uploadImage from '../helpers/uploadImage';
 import DisplayImage from './DisplayImage';
+import { MdDelete } from "react-icons/md";
+import SummaryApi from './../EndPoints/index';
+import {toast} from 'react-toastify';
 
-
-const UploadProduct = ({
+  const UploadProduct = ({
   onClose
-}) => {
+  }) => {
   const [data, setData] = useState({
     productName : "",
     brandName : "",
@@ -16,13 +18,20 @@ const UploadProduct = ({
     productImage : [],
     description : "",
     price : "",
-    selling : ""
+    sellingPrice : ""
   })
-  
+
   const [openFullScreenImage, setOpenFullScreenImage] = useState(false)
   const [fullScreenImage, setFullScreenImage] = useState("")
   const handleOnChange = (e) => {
+    const {name, value} = e.target
 
+    setData((preve) => {
+      return{
+        ...preve,
+        [name] : value
+      }
+    })
   }
 
   const handleUploadProduct = async(e) => {
@@ -36,6 +45,51 @@ const UploadProduct = ({
       }
     })
   }
+
+  const handleDeleteProductImage = async(index) => {
+
+    const newProductImage = [...data.productImage]
+    newProductImage.splice(index,1)
+    setData((preve) => {
+      return{
+        ...preve,
+        productImage : [...newProductImage]
+      }
+    })
+  }
+
+  
+  const handleSubmit = async(e) =>{
+    e.preventDefault()
+
+  const response = await fetch(SummaryApi.UploadProduct.url,{
+    method : SummaryApi.UploadProduct.method,
+    credentials : "include",
+    headers : {
+      "Content-Type" : "application/json"
+    },
+    body : JSON.stringify(data)
+  });
+
+  if (response.headers.get("content-type")?.includes("application/json")) {
+  const responseData = await response.json();
+
+  if (response.ok) {
+    toast.success(responseData?.message);
+    onClose();
+  } else {
+    toast.error(responseData?.message || "Something went wrong");
+  }
+} else {
+  const text = await response.text();
+  console.error("Non-JSON response received:", text);
+  toast.error("Server error: unexpected response format.");
+}
+
+
+  }
+
+
   return (
     <div className='fixed w-full h-full bg-slate-200 bg-opacity-35 top-0 left-0 right-0 bottom-0 flex justify-center items-center'>
       <div className='bg-white p-4 rounded w-full max-w-2xl h-full max-h-[80%] overflow-hidden'>
@@ -47,7 +101,7 @@ const UploadProduct = ({
           </div>
         </div>
 
-        <form className='grid p-4 gap-2 overflow-y-scroll h-full'>
+        <form className='grid p-4 gap-2 overflow-y-scroll h-full' onSubmit={handleSubmit}>
           <label htmlFor='productName'>Product Name :</label>
           <input 
             type='text' 
@@ -57,6 +111,7 @@ const UploadProduct = ({
             value={data.productName} 
             onChange={handleOnChange}
             className='p-2 bg-slate-100 border rounded'
+            required
           />
 
           <label htmlFor='brandName' className='mt-3'>Brand Name :</label>
@@ -68,10 +123,12 @@ const UploadProduct = ({
             value={data.brandName} 
             onChange={handleOnChange}
             className='p-2 bg-slate-100 border rounded'
+            required
           />
 
           <label htmlFor='category' className='mt-3'>Category :</label>
-          <select value={data.category} className='p-2 bg-slate-100 border rounded'>
+          <select required value={data.category} name='category' onChange={handleOnChange} className='p-2 bg-slate-100 border rounded'>
+            <option value={""}>select category</option>
             {
               productCategory.map((el, index) =>{
                 return (
@@ -95,18 +152,23 @@ const UploadProduct = ({
             {data?.productImage[0]?(
               <div className='flex items-center gap-2 '>
                 {
-                  data.productImage.map(el =>{
+                  data.productImage.map((el,index) =>{
                 return(
-                  <img 
-                  src={el} 
-                  alt={el} 
-                  width={80} 
-                  height={80} 
-                  className='bg-slate-100 border rounded cursor-pointer' 
-                  onClick={() => {
-                    setOpenFullScreenImage(true)
-                    setFullScreenImage(el)
-                  }}/>
+                  <div className='relative group'>
+                    <img 
+                      src={el} 
+                      alt={el} 
+                      width={80} 
+                      height={80} 
+                      className='bg-slate-100 border rounded cursor-pointer' 
+                      onClick={() => {
+                        setOpenFullScreenImage(true)
+                        setFullScreenImage(el)
+                      }}/>
+                      <div className='absolute bottom-0 right-0 p-1 text-xs text-white bg-blue-600 rounded-full hidden group-hover:block cursor-pointer' onClick={() => handleDeleteProductImage(index)}>
+                        <MdDelete />
+                      </div>
+                  </div>
                 )
               })
                 }
@@ -117,29 +179,44 @@ const UploadProduct = ({
             
           </div>
 
-          <button className='px-3 py-2 bg-blue-600 text-white mb-10 hover:bg-blue-700'>Upload Product</button>
-
-          <label htmlFor='description' className='mt-3'>Description :</label>
+          <label htmlFor='price' className='mt-3'>Price :</label>
           <input 
-            type='text' 
-            id='description'  
-            placeholder='enter description' 
-            name='description'
-            value={data.description} 
-            onChange={handleOnChange}
-            className='p-2 bg-slate-100 border rounded'
-          />
-
-          <label htmlFor='productName' className='mt-3'>Price :</label>
-          <input 
-            type='text' 
+            type='number' 
             id='price'  
             placeholder='enter price'
             name='price' 
             value={data.price} 
             onChange={handleOnChange}
             className='p-2 bg-slate-100 border rounded'
+            required
           />
+
+          <label htmlFor='sellingPrice' className='mt-3'>Selling Price :</label>
+          <input 
+            type='text' 
+            id='sellingPrice'  
+            placeholder='enter selling Price' 
+            name='sellingPrice'
+            value={data.sellingPrice} 
+            onChange={handleOnChange}
+            className='p-2 bg-slate-100 border rounded'
+            required
+          />
+
+          <label htmlFor='description' className='mt-3'>Description :</label>
+          <textarea 
+            className='h-28 bg-slate-100 border-resize-none p-1' 
+            rows={3} 
+            placeholder='enter product description'
+            name='description'
+            value={data.description}
+            onChange={handleOnChange}
+            required
+          >
+          </textarea>
+
+          <button className='px-3 py-2 bg-blue-600 text-white mb-10 hover:bg-blue-700'>Upload Product</button>
+
         </form>
 
       </div>
