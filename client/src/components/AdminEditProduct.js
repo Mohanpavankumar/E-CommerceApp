@@ -8,18 +8,21 @@ import { MdDelete } from "react-icons/md";
 import SummaryApi from './../EndPoints/index';
 import {toast} from 'react-toastify';
 
-  const UploadProduct = ({
+
+const AdminEditProduct = ({
   onClose,
-  fetchData
-  }) => {
+  productData,
+  fetchData,
+}) => {
   const [data, setData] = useState({
-    productName : "",
-    brandName : "",
-    category : "",
-    productImage : [],
-    description : "",
-    price : "",
-    sellingPrice : ""
+    _id: productData?._id,
+    productName : productData?.productName,
+    brandName : productData?.brandName,
+    category : productData?.category,
+    productImage : productData?.productImage || [],
+    description : productData?.description,
+    price : productData?.price,
+    sellingPrice : productData?.sellingPrice
   })
 
   const [openFullScreenImage, setOpenFullScreenImage] = useState(false)
@@ -63,8 +66,8 @@ import {toast} from 'react-toastify';
   const handleSubmit = async(e) =>{
     e.preventDefault()
 
-  const response = await fetch(SummaryApi.UploadProduct.url,{
-    method : SummaryApi.UploadProduct.method,
+  const response = await fetch(SummaryApi.updateProduct.url,{
+    method : SummaryApi.updateProduct.method,
     credentials : "include",
     headers : {
       "Content-Type" : "application/json"
@@ -78,7 +81,7 @@ import {toast} from 'react-toastify';
   if (response.ok) {
     toast.success(responseData?.message);
     onClose();
-    fetchData()
+    fetchData();
   } else {
     toast.error(responseData?.message || "Something went wrong");
   }
@@ -88,14 +91,12 @@ import {toast} from 'react-toastify';
   toast.error("Server error: unexpected response format.");
 }
 }
-
-
   return (
     <div className='fixed w-full h-full bg-slate-200 bg-opacity-35 top-0 left-0 right-0 bottom-0 flex justify-center items-center'>
       <div className='bg-white p-4 rounded w-full max-w-2xl h-full max-h-[80%] overflow-hidden'>
         
         <div className='flex justify-between items-center pb-3'>
-          <h2 className='font-bold text-lg'>UploadProduct</h2>
+          <h2 className='font-bold text-lg'>Edit Product</h2>
           <div className='w-fit ml-auto text-2xl hover:text-blue-600 cursor-pointer' onClick={onClose}>
             <CgClose />
           </div>
@@ -215,7 +216,7 @@ import {toast} from 'react-toastify';
           >
           </textarea>
 
-          <button className='px-3 py-2 bg-blue-600 text-white mb-10 hover:bg-blue-700'>Upload Product</button>
+          <button className='px-3 py-2 bg-blue-600 text-white mb-10 hover:bg-blue-700'>Update Product</button>
 
         </form>
 
@@ -231,4 +232,4 @@ import {toast} from 'react-toastify';
   )
 }
 
-export default UploadProduct
+export default AdminEditProduct

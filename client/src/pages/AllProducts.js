@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import UploadProduct from '../components/UploadProduct'
 import SummaryApi from '../EndPoints'
+import AdminProductCard from '../components/AdminProductCard'
 
 const AllProducts = () => {
   const [openUploadProduct, setOpenUploadProduct] = useState(false)
@@ -25,14 +26,11 @@ const AllProducts = () => {
       </div>
 
       {/* all products */}
-      <div className='flex items-center gap-5 py-4'>
+      <div className='flex items-center flex-wrap gap-3 py-4 h-[calc(100vh-190px)] overflow-y-scroll'>
         {
           allProduct.map((product, index)=>{
             return(
-              <div className='bg-white p-4 rounded'>
-                <img src={product?.productImage[0]} alt='img' width={100} height={100} />
-                <h1>{product.productName}</h1>
-              </div>
+              <AdminProductCard data={product} key={index+"allProduct"} fetchData={fetchAllProduct} />
             )
           })
         }
@@ -42,7 +40,7 @@ const AllProducts = () => {
 
       {
         openUploadProduct && (
-          <UploadProduct onClose={()=>setOpenUploadProduct(false)}/>
+          <UploadProduct onClose={()=>setOpenUploadProduct(false)} fetchData={fetchAllProduct} />
         )
       }
     </div>
