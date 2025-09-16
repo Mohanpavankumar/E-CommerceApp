@@ -48,7 +48,7 @@ const SignUp = () => {
 
         //check password and confirmpassword are same or not
         if(data.password === data.confirmPassword){
-            //if both are same fetching the api from backend server to post the data to database
+            //if both are same, fetching the api from backend server to post the data to database
             const dataResponse = await fetch(SummaryApi.signUp.url,{
                 method : SummaryApi.signUp.method,
                 headers : {

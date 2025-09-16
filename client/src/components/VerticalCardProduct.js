@@ -4,7 +4,7 @@ import fetchCategoryWiseProduct from './../helpers/fetchCategoryWiseProduct';
 import displayCurrency from '../helpers/displayCurrency';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 
-const HorizontalCardProduct = ({category, heading}) => {
+const VerticalCardProduct = ({category, heading}) => {
 
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -44,11 +44,11 @@ const HorizontalCardProduct = ({category, heading}) => {
           {
           data.map((product,index)=>{
             return(
-              <div className='w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] h-36 bg-white rounded-sm shadow flex'>
-                <div className='bg-slate-200 h-full p-4 min-w-[120px] md:min-w-[145px]'>
-                    <img src={product.productImage[0]} alt={product.heading} className='object-scale-down h-full hover:scale-110 transition-all cursor-pointer'/>
+              <div className='w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] bg-white rounded-sm shadow'>
+                <div className='bg-slate-200 h-48 p-4 min-w-[280px] md:min-w-[145px] flex justify-center items-center'>
+                    <img src={product.productImage[0]} alt={product.heading} className='object-scale-down h-full hover:scale-110 transition-all mix-blend-multiply cursor-pointer'/>
                 </div>
-                <div className='p-4 grid'>
+                <div className='p-4 grid gap-3'>
                   <h2 className='font-medium md:text-lg text-ellipsis line-clamp-1 text-black capitalize'>{product?.productName}</h2>
                   <p className='capitalize text-slate-500'>{product?.category}</p>
                   <div className='flex gap-3'>
@@ -66,4 +66,4 @@ const HorizontalCardProduct = ({category, heading}) => {
   )
 }
 
-export default HorizontalCardProduct
+export default VerticalCardProduct
