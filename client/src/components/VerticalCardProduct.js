@@ -41,8 +41,26 @@ const VerticalCardProduct = ({category, heading}) => {
         <div className='flex items-center gap-4 md:gap-6 overflow-x-scroll scrollbar-none' ref={scrollElement}>
           <button  className='bg-white shadow-md rounded-full p-1 absolute left-0 text-lg hidden md:block transition-all' onClick={scrollLeft}><FaAngleLeft /></button>
           <button  className='bg-white shadow-md rounded-full p-1 absolute right-0 text-lg hidden md:block transition-all' onClick={scrollRight}><FaAngleRight /></button>
-          {
-          data.map((product,index)=>{
+          { loading ? (
+            loadingList.map((product,index)=>{
+            return(
+              <div className='w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] bg-white rounded-sm shadow'>
+                <div className='bg-slate-200 h-48 p-4 min-w-[280px] md:min-w-[145px] flex justify-center items-center'>
+                </div>
+                <div className='p-4 grid gap-3'>
+                  <h2 className='font-medium md:text-lg text-ellipsis line-clamp-1 text-black capitalize bg-slate-200 p-1 py-2 animate-pulse rounded-full'></h2>
+                  <p className='capitalize text-slate-500 bg-slate-200 p-1 py-2 animate-pulse rounded-full'></p>
+                  <div className='flex gap-3'>
+                    <p className='text-blue-600 font-medium bg-slate-200 p-1 py-2 animate-pulse rounded-full w-full'></p>
+                    <p className='text-slate-500 line-through bg-slate-200 p-1 py-2 animate-pulse rounded-full w-full'></p>
+                  </div>
+                  <button className='text-sm text-white px-3 bg-slate-200 p-1 py-2 animate-pulse rounded-full'></button>
+                </div>
+              </div>
+            )
+          })
+          ) : (
+            data.map((product,index)=>{
             return(
               <div className='w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] bg-white rounded-sm shadow'>
                 <div className='bg-slate-200 h-48 p-4 min-w-[280px] md:min-w-[145px] flex justify-center items-center'>
@@ -60,6 +78,7 @@ const VerticalCardProduct = ({category, heading}) => {
               </div>
             )
           })
+          )
         }
         </div>
     </div>
