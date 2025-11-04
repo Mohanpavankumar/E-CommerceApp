@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import SummaryApi from '../EndPoints'
 import { FaStar, FaStarHalf } from 'react-icons/fa'
 import displayCurrency from '../helpers/displayCurrency'
+import VerticalCardProduct from '../components/VerticalCardProduct'
+import CategoryWiseProductDisplay from '../components/CategoryWiseProductDisplay'
 
 const ProductDetails = () => {
 
@@ -20,6 +22,13 @@ const ProductDetails = () => {
     const [loading, setLoading] = useState(true)
     const productImageListLoading = new Array(4).fill(null)
     const [activeImage, setActiveImage] = useState("")
+
+    const [zoomImageCoordinate, setZoomImageCoordinate] = useState({
+        x : 0,
+        y : 0
+    })
+
+    const [zoomImage, setZoomImage] = useState(false)
 
     const fetchProductDetails = async() =>{
         setLoading(true)
@@ -42,16 +51,50 @@ const ProductDetails = () => {
         fetchProductDetails()
     },[params])
 
-    const handleMouseClickProduct = (imageURL) =>{
+    const handleMouseEnterProduct = (imageURL) =>{
         setActiveImage(imageURL)
     }
+
+    const handleZoomImage = useCallback((e) =>{
+        setZoomImage(true)
+        const {left, top, width, height} = e.target.getBoundingClientRect()
+
+        const x = (e.clientX - left) / width
+        const y = (e.clientY - top) / height
+
+        setZoomImageCoordinate({
+            x,
+            y
+        })
+    },[zoomImageCoordinate])
+
+    const handleLeaveImageZoom = () =>{
+        setZoomImage(false)
+    }
+
   return (
     <div className='container mx-auto p-4'>
         <div className='min-h-[200px] flex flex-col lg:flex-row gap-4'>
             {/**Product Image**/}
             <div className='h-96 flex flex-col lg:flex-row-reverse gap-4'>
-                <div className='h-[300px] w-[300px] lg:h-96 lg:w-96 bg-slate-200'>
-                    <img src={activeImage} className='h-full w-full object-scale-down mix-blend-multiply' alt="" />
+                <div className='h-[300px] w-[300px] lg:h-96 lg:w-96 bg-slate-200 relative p-2'>
+                    <img src={activeImage} className='h-full w-full object-scale-down mix-blend-multiply' alt="" onMouseMove={handleZoomImage} onMouseLeave={handleLeaveImageZoom}/>
+
+                    {/**Product Zoom**/}
+                    {
+                        zoomImage && (
+                            <div className='hidden lg:block absolute min-w-[500px] overflow-hidden min-h-[400px] bg-slate-200 p-1 -right-[510px] top-0'>
+                                <div className='w-full h-full min-h-[400px] min-w-[500px] mix-blend-multiply scale-150'
+                                    style={{
+                                        backgroundImage : `url(${activeImage})`,
+                                        backgroundRepeat : 'no-repeat',
+                                        backgroundPosition : `${zoomImageCoordinate.x*100}% ${zoomImageCoordinate.y*100}% `
+                                    }}
+                                >
+                                </div>
+                            </div>
+                        )
+                    }
                 </div>
                 <div className='h-full'>
                     {
@@ -72,7 +115,7 @@ const ProductDetails = () => {
                                 data?.productImage?.map((imageURL, index) =>{
                                     return(
                                         <div className='h-20 w-20 bg-slate-200 rounded p-1' key={imageURL}>
-                                            <img src={imageURL} className='w-full object-scale-down mix-blend-multiply cursor-pointer' onMouseEnter={()=>handleMouseClickProduct(imageURL)} onClick={()=>handleMouseClickProduct(imageURL)} alt={imageURL}/>
+                                            <img src={imageURL} className='w-full object-scale-down mix-blend-multiply cursor-pointer' onMouseEnter={()=>handleMouseEnterProduct(imageURL)} onClick={()=>handleMouseEnterProduct(imageURL)} alt={imageURL}/>
                                         </div>
                                 )
                             })
@@ -173,6 +216,11 @@ const ProductDetails = () => {
                 )
             }
         </div>
+        {
+            data.category && (
+                <CategoryWiseProductDisplay category={data.category}  heading={"Recommended Products"}/>
+            )
+        }
     </div>
   )
 }

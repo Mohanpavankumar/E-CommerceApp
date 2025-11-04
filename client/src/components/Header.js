@@ -8,13 +8,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import SummaryApi from './../EndPoints/index';
 import { toast } from 'react-toastify';
 import { setUserDetails } from '../store/userSlice';
+import { useContext } from 'react';
+import Context from '../context';
 
 const Header = () => {
   const user = useSelector(state => state?.user?.user)
   const dispatch = useDispatch()
   const [menuDisplay, setMenuDisplay] = useState(false)
-
-  // console.log("User Header",user)
+  const context = useContext(Context)
 
   const handleLogout = async() =>{
     const fetchData = await fetch(SummaryApi.logout_user.url,{
@@ -76,13 +77,18 @@ const Header = () => {
               )
             }
           </div>
-          <div className='text-3xl cursor-pointer relative'>
-            <span><PiShoppingCartBold/></span>
 
-            <div className='bg-blue-600 text-white w-5 h-5 rounded-full p-1 flex items-center justify-center absolute -top-2 -right-1'>
-              <p className='text-xs'>0</p>
-            </div>
-          </div>
+          {
+            user?._id && (
+              <Link to={"/cart"} className='text-3xl cursor-pointer relative'>
+                <span><PiShoppingCartBold/></span>
+
+              <div className='bg-blue-600 text-white w-5 h-5 rounded-full p-1 flex items-center justify-center absolute -top-2 -right-1'>
+                <p className='text-xs'>{context?.cartProductCount}</p>
+              </div>
+          </Link>
+            )
+          }
 
           <div>
             {
