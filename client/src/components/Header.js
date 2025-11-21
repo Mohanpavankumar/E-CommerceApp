@@ -3,7 +3,7 @@ import Logo from './Logo';
 import { IoIosSearch } from "react-icons/io";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { PiShoppingCartBold } from "react-icons/pi";
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
 import SummaryApi from './../EndPoints/index';
 import { toast } from 'react-toastify';
@@ -16,6 +16,11 @@ const Header = () => {
   const dispatch = useDispatch()
   const [menuDisplay, setMenuDisplay] = useState(false)
   const context = useContext(Context)
+  const navigate = useNavigate()
+  const searchInput = useLocation()
+  const URLserach = new URLSearchParams(searchInput?.search)
+  const searchQuery = URLserach.getAll("q")
+  const [search, setSearch] = useState(searchQuery)
 
   const handleLogout = async() =>{
     const fetchData = await fetch(SummaryApi.logout_user.url,{
@@ -35,6 +40,17 @@ const Header = () => {
     }
   }
 
+  const handleSearch = (e) =>{
+    const {value} = e.target
+    setSearch(value)
+
+    if(value){
+      navigate(`/search?q=${value}`)
+    }else{
+      navigate('/search')
+    }
+  }
+
   return (
     <header className='h-16 shadow-sm bg-white fixed w-full z-40'>
       <div className='h-full container mx-auto flex items-center px-6 justify-between'>
@@ -45,7 +61,7 @@ const Header = () => {
         </div>
 
         <div className='hidden lg:flex items-center w-full justify-between max-w-sm border rounded-full focus-within:shadow pl-2'>
-          <input type='text' placeholder='search products here...' className='w-full outline-none'/>
+          <input type='text' placeholder='search products here...' className='w-full outline-none' onChange={handleSearch} value={search}/>
           <div className='text-lg min-w-[50px] h-8 bg-blue-600 flex items-center justify-center rounded-r-full text-white'>
             <IoIosSearch/>
           </div>
@@ -93,7 +109,7 @@ const Header = () => {
           <div>
             {
               user?._id ? (
-                <Link to='/sign-up' onClick={handleLogout} className='px-3 py-1 rounded-full text-white bg-blue-600 hover:bg-blue-800'>Logout</Link>
+                <Link to='/' onClick={handleLogout} className='px-3 py-1 rounded-full text-white bg-blue-600 hover:bg-blue-800'>Logout</Link>
               )
               :
               (
